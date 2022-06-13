@@ -1,0 +1,17 @@
+app:
+  name: 'auth'
+  version: '1.0.0'
+
+http:
+  port: '8080'
+
+logger:
+  log_level: 'debug'
+  rollbar_env: 'auth'
+
+
+users:
+  - name: 'test123'
+    password: '$2a$14$ke.euFhogr5WCqXSagVuceiZc2o6w/Z6hoL9KIVqIPZdEZL4TRF9K'
+  - name: ''
+    password: ''
