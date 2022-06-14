@@ -68,7 +68,7 @@ func (a *authenticationRoutes) login(ctx context.Context) http.HandlerFunc {
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 			err = jsonRespond(w, http.StatusInternalServerError, responseError{Error: http.StatusText(http.StatusInternalServerError)})
 			if err != nil {
-				a.logger.Warn("Error respond: ", err.Error())
+				a.logger.Error("Error respond: ", err.Error())
 			}
 			return
 		}
@@ -77,7 +77,7 @@ func (a *authenticationRoutes) login(ctx context.Context) http.HandlerFunc {
 		if err != nil {
 			err = jsonRespond(w, http.StatusForbidden, responseError{Error: http.StatusText(http.StatusForbidden)})
 			if err != nil {
-				a.logger.Warn("Error respond: ", err.Error())
+				a.logger.Error("Error respond: ", err.Error())
 			}
 			return
 		}
@@ -104,7 +104,7 @@ func (a *authenticationRoutes) login(ctx context.Context) http.HandlerFunc {
 		http.SetCookie(w, &cookieRefresh)
 		err = jsonRespond(w, http.StatusOK, res)
 		if err != nil {
-			a.logger.Warn("Error respond: ", err.Error())
+			a.logger.Error("Error respond: ", err.Error())
 		}
 		return
 
@@ -158,7 +158,7 @@ func (a *authenticationRoutes) info(ctx context.Context) http.HandlerFunc {
 		if !ok {
 			err := jsonRespond(w, http.StatusInternalServerError, responseError{Error: http.StatusText(http.StatusInternalServerError)})
 			if err != nil {
-				a.logger.Warn("Error respond: ", err.Error())
+				a.logger.Error("Error respond: ", err.Error())
 			}
 			return
 		}
@@ -167,7 +167,7 @@ func (a *authenticationRoutes) info(ctx context.Context) http.HandlerFunc {
 		if err != nil {
 			err = jsonRespond(w, http.StatusNotFound, responseError{Error: http.StatusText(http.StatusNotFound)})
 			if err != nil {
-				a.logger.Warn("Error respond: ", err.Error())
+				a.logger.Error("Error respond: ", err.Error())
 			}
 			return
 		}
@@ -176,7 +176,7 @@ func (a *authenticationRoutes) info(ctx context.Context) http.HandlerFunc {
 		if err := json.NewEncoder(w).Encode(u); err != nil {
 			err = jsonRespond(w, http.StatusInternalServerError, responseError{Error: http.StatusText(http.StatusInternalServerError)})
 			if err != nil {
-				a.logger.Warn("Error respond: ", err.Error())
+				a.logger.Error("Error respond: ", err.Error())
 			}
 			return
 		}

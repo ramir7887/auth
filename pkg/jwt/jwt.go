@@ -9,7 +9,7 @@ import (
 var (
 	jwtKey            = []byte("qwerty")
 	ParseError        = errors.New("couldn't parse claims")
-	TokenExpiredError = errors.New("oken expired")
+	TokenExpiredError = errors.New("token expired")
 )
 
 type Claim struct {
