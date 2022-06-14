@@ -63,5 +63,5 @@ func (l *Logger) Error(args ...interface{}) {
 }
 
 func (l *Logger) Fatal(args ...interface{}) {
-	l.logger.Fatal(args)
+	l.logger.Fatal(args...)
 }

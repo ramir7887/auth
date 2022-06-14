@@ -20,9 +20,8 @@ type authenticationRoutes struct {
 }
 
 type userData struct {
-	name         string
-	token        string
-	refreshToken string
+	name  string
+	token string
 }
 
 func newAuthenticationRoutes(r *mux.Router, l logger.Interface, uc usecase.Authentication) {

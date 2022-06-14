@@ -19,7 +19,9 @@ func TokenMiddleware(ctx context.Context, l logger.Interface) func(http.Handler)
 			if token == "" {
 				cookie, err := r.Cookie("accessToken")
 				if err != nil || cookie.Value == "" {
-					jsonRespond(w, http.StatusForbidden, map[string]string{"error": http.StatusText(http.StatusForbidden)})
+					if err := jsonRespond(w, http.StatusForbidden, map[string]string{"error": http.StatusText(http.StatusForbidden)}); err != nil {
+						l.Error("Error respond: ", err.Error())
+					}
 					return
 				}
 				token = cookie.Value
@@ -28,7 +30,9 @@ func TokenMiddleware(ctx context.Context, l logger.Interface) func(http.Handler)
 			token = strings.Replace(token, "Bearer ", "", 1)
 			claim, err := jwt.ValidateToken(token)
 			if err != nil {
-				jsonRespond(w, http.StatusInternalServerError, map[string]string{"error": http.StatusText(http.StatusInternalServerError)})
+				if err := jsonRespond(w, http.StatusInternalServerError, map[string]string{"error": http.StatusText(http.StatusInternalServerError)}); err != nil {
+					l.Error("Error respond: ", err.Error())
+				}
 				return
 			}
 			user := &userData{
@@ -46,7 +50,7 @@ func LoggingMiddleware(l logger.Interface) func(http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			start := time.Now()
 			next.ServeHTTP(w, r)
-			l.Info(fmt.Sprintf("Request: %s %s - %s - %s", r.Method, r.URL.String(), r.RemoteAddr, time.Now().Sub(start).String()))
+			l.Info(fmt.Sprintf("Request: %s %s - %s - %s", r.Method, r.URL.String(), r.RemoteAddr, time.Since(start).String()))
 		})
 	}
 }

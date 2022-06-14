@@ -20,9 +20,8 @@ type authenticationRoutes struct {
 }
 
 type userData struct {
-	name         string
-	token        string
-	refreshToken string
+	name  string
+	token string
 }
 
 type requestLogin struct {
@@ -106,7 +105,6 @@ func (a *authenticationRoutes) login(ctx context.Context) http.HandlerFunc {
 		if err != nil {
 			a.logger.Error("Error respond: ", err.Error())
 		}
-		return
 
 		// Пока не понятно надо или нет
 		//vars := mux.Vars(r)
