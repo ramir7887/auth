@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/gorilla/mux"
+	"gitlab.com/g6834/team28/auth/internal/controller/http/responder"
 	"gitlab.com/g6834/team28/auth/internal/usecase"
 	"gitlab.com/g6834/team28/auth/pkg/logger"
 	"net/http"
@@ -65,7 +66,7 @@ func (a *authenticationRoutes) login(ctx context.Context) http.HandlerFunc {
 		var req requestLogin
 
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			err = jsonRespond(w, http.StatusInternalServerError, responseError{Error: http.StatusText(http.StatusInternalServerError)})
+			err = responder.JsonRespond(w, http.StatusInternalServerError, responseError{Error: http.StatusText(http.StatusInternalServerError)})
 			if err != nil {
 				a.logger.Error("Error respond: ", err.Error())
 			}
@@ -74,7 +75,7 @@ func (a *authenticationRoutes) login(ctx context.Context) http.HandlerFunc {
 
 		token, refreshToken, err := a.uc.Login(ctx, req.Login, req.Password)
 		if err != nil {
-			err = jsonRespond(w, http.StatusForbidden, responseError{Error: http.StatusText(http.StatusForbidden)})
+			err = responder.JsonRespond(w, http.StatusForbidden, responseError{Error: http.StatusText(http.StatusForbidden)})
 			if err != nil {
 				a.logger.Error("Error respond: ", err.Error())
 			}
@@ -101,7 +102,7 @@ func (a *authenticationRoutes) login(ctx context.Context) http.HandlerFunc {
 
 		http.SetCookie(w, &cookieAccess)
 		http.SetCookie(w, &cookieRefresh)
-		err = jsonRespond(w, http.StatusOK, res)
+		err = responder.JsonRespond(w, http.StatusOK, res)
 		if err != nil {
 			a.logger.Error("Error respond: ", err.Error())
 		}
@@ -154,7 +155,7 @@ func (a *authenticationRoutes) info(ctx context.Context) http.HandlerFunc {
 		defer a.logger.Info("End info handler v2")
 		user, ok := r.Context().Value(keyUserData).(*userData)
 		if !ok {
-			err := jsonRespond(w, http.StatusInternalServerError, responseError{Error: http.StatusText(http.StatusInternalServerError)})
+			err := responder.JsonRespond(w, http.StatusInternalServerError, responseError{Error: http.StatusText(http.StatusInternalServerError)})
 			if err != nil {
 				a.logger.Error("Error respond: ", err.Error())
 			}
@@ -163,7 +164,7 @@ func (a *authenticationRoutes) info(ctx context.Context) http.HandlerFunc {
 
 		u, err := a.uc.Info(ctx, user.name)
 		if err != nil {
-			err = jsonRespond(w, http.StatusNotFound, responseError{Error: http.StatusText(http.StatusNotFound)})
+			err = responder.JsonRespond(w, http.StatusNotFound, responseError{Error: http.StatusText(http.StatusNotFound)})
 			if err != nil {
 				a.logger.Error("Error respond: ", err.Error())
 			}
@@ -172,7 +173,7 @@ func (a *authenticationRoutes) info(ctx context.Context) http.HandlerFunc {
 
 		w.Header().Set("Content-Type", "application/json")
 		if err := json.NewEncoder(w).Encode(u); err != nil {
-			err = jsonRespond(w, http.StatusInternalServerError, responseError{Error: http.StatusText(http.StatusInternalServerError)})
+			err = responder.JsonRespond(w, http.StatusInternalServerError, responseError{Error: http.StatusText(http.StatusInternalServerError)})
 			if err != nil {
 				a.logger.Error("Error respond: ", err.Error())
 			}

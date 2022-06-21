@@ -3,6 +3,7 @@ package v2
 import (
 	"context"
 	"fmt"
+	"gitlab.com/g6834/team28/auth/internal/controller/http/responder"
 	"gitlab.com/g6834/team28/auth/pkg/jwt"
 	"gitlab.com/g6834/team28/auth/pkg/logger"
 	"net/http"
@@ -19,7 +20,7 @@ func TokenMiddleware(ctx context.Context, l logger.Interface) func(http.Handler)
 			if token == "" {
 				cookie, err := r.Cookie("accessToken")
 				if err != nil || cookie.Value == "" {
-					if err := jsonRespond(w, http.StatusForbidden, map[string]string{"error": http.StatusText(http.StatusForbidden)}); err != nil {
+					if err := responder.JsonRespond(w, http.StatusForbidden, map[string]string{"error": http.StatusText(http.StatusForbidden)}); err != nil {
 						l.Error("Error respond: ", err.Error())
 					}
 					return
@@ -30,7 +31,7 @@ func TokenMiddleware(ctx context.Context, l logger.Interface) func(http.Handler)
 			token = strings.Replace(token, "Bearer ", "", 1)
 			claim, err := jwt.ValidateToken(token)
 			if err != nil {
-				if err := jsonRespond(w, http.StatusInternalServerError, map[string]string{"error": http.StatusText(http.StatusInternalServerError)}); err != nil {
+				if err := responder.JsonRespond(w, http.StatusInternalServerError, map[string]string{"error": http.StatusText(http.StatusInternalServerError)}); err != nil {
 					l.Error("Error respond: ", err.Error())
 				}
 				return
