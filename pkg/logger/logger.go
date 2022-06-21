@@ -1,29 +1,35 @@
 package logger
 
 import (
-	"github.com/sirupsen/logrus"
+	"log"
 	"os"
 	"strings"
+	"time"
+
+	"github.com/sirupsen/logrus"
 )
 
-type Interface interface {
-	Debug(args ...interface{})
-	Info(args ...interface{})
-	Warn(args ...interface{})
-	Error(args ...interface{})
-	Fatal(args ...interface{})
-}
-
-type Fields map[string]interface{}
-
+// Logger -.
 type Logger struct {
-	logger *logrus.Logger
+	entry *logrus.Entry
 }
 
-func New(level string) Interface {
-	var l logrus.Level
+var _ Interface = (*Logger)(nil)
+
+// New -.
+func New(level string) *Logger {
+	var (
+		l logrus.Level
+		f logrus.Formatter
+	)
+
+	f = &logrus.JSONFormatter{
+		TimestampFormat: time.RFC3339Nano,
+	}
 
 	switch strings.ToLower(level) {
+	case "fatal":
+		l = logrus.FatalLevel
 	case "error":
 		l = logrus.ErrorLevel
 	case "warn":
@@ -33,35 +39,76 @@ func New(level string) Interface {
 	case "debug":
 		l = logrus.DebugLevel
 	default:
-		l = logrus.InfoLevel
+		log.Fatalf("Unknown log level: %s", level)
 	}
 
 	logger := logrus.New()
 	logger.SetLevel(l)
-	logger.SetFormatter(&logrus.JSONFormatter{})
+	logger.SetFormatter(f)
 	logger.SetOutput(os.Stdout)
 
+	entry := logger.WithFields(logrus.Fields{
+		"pid":     os.Getpid(),
+		"service": "auth",
+	})
+
 	return &Logger{
-		logger: logger,
+		entry: entry,
 	}
 }
 
+func (l *Logger) WithFields(fields Fields) *Logger {
+	return &Logger{
+		entry: l.entry.WithFields(logrus.Fields(fields)),
+	}
+}
+
+// Debug -.
 func (l *Logger) Debug(args ...interface{}) {
-	l.logger.Debug(args...)
+	l.entry.Debug(args...)
 }
 
+// Debugf -.
+func (l *Logger) Debugf(format string, args ...interface{}) {
+	l.entry.Debugf(format, args...)
+}
+
+// Info -.
 func (l *Logger) Info(args ...interface{}) {
-	l.logger.Info(args...)
+	l.entry.Info(args...)
 }
 
+// Infof -.
+func (l *Logger) Infof(format string, args ...interface{}) {
+	l.entry.Infof(format, args...)
+}
+
+// Warn -.
 func (l *Logger) Warn(args ...interface{}) {
-	l.logger.Warn(args...)
+	l.entry.Warn(args...)
 }
 
+// Warnf -.
+func (l *Logger) Warnf(format string, args ...interface{}) {
+	l.entry.Warnf(format, args...)
+}
+
+// Error -.
 func (l *Logger) Error(args ...interface{}) {
-	l.logger.Error(args...)
+	l.entry.Error(args...)
 }
 
+// Errorf -.
+func (l *Logger) Errorf(format string, args ...interface{}) {
+	l.entry.Errorf(format, args...)
+}
+
+// Fatal -.
 func (l *Logger) Fatal(args ...interface{}) {
-	l.logger.Fatal(args...)
+	l.entry.Fatal(args...)
+}
+
+// Fatalf -.
+func (l *Logger) Fatalf(format string, args ...interface{}) {
+	l.entry.Fatalf(format, args...)
 }
