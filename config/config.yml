@@ -15,3 +15,8 @@ users:
     password: '$2a$14$ke.euFhogr5WCqXSagVuceiZc2o6w/Z6hoL9KIVqIPZdEZL4TRF9K'
   - name: ''
     password: ''
+
+profile:
+  login: 'test123'
+  password: 'qwerty'
+  enabled: true

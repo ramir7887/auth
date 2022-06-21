@@ -3,6 +3,7 @@ package app
 
 import (
 	"fmt"
+	"gitlab.com/g6834/team28/auth/internal/controller/http/profile"
 	v2 "gitlab.com/g6834/team28/auth/internal/controller/http/v2"
 	"gitlab.com/g6834/team28/auth/internal/entity"
 	"gitlab.com/g6834/team28/auth/internal/repository/inmemory"
@@ -38,10 +39,14 @@ func Run(cfg *config.Config) {
 	// 1. Create UseCase
 	authenticationUseCase := usecase.New(repository)
 
-	// HTTP Server
-	// 1. Create Router for Postman tests
 	handler := mux.NewRouter()
+	// HTTP Server
+	prof := profile.New(cfg.Profile.Enabled, cfg.Profile.Login, cfg.Profile.Password, l)
+	prof.NewRouter(handler.PathPrefix("/debug/pprof/").Subrouter())
+
+	// 1. Create Router for Postman tests
 	v2.NewRouter(handler, l, authenticationUseCase)
+
 	// 2. Create Router for Requirements
 	//handler := mux.NewRouter()
 	//v1.NewRouter(handler, l, authenticationUseCase)
