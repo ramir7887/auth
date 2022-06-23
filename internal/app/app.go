@@ -52,6 +52,10 @@ func Run(cfg *config.Config) {
 	//v1.NewRouter(handler, l, authenticationUseCase)
 
 	httpServer := httpserver.New(handler, httpserver.Port(cfg.HTTP.Port))
+	l.WithFields(logger.Fields{
+		"package": "app",
+		"method":  "Run",
+	}).Infof("Http server started at :%s", cfg.HTTP.Port)
 
 	// Waiting signal
 	interrupt := make(chan os.Signal, 1)

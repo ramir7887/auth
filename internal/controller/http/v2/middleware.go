@@ -14,14 +14,21 @@ import (
 func TokenMiddleware(ctx context.Context, l logger.Interface) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			l.Info("Start TokenMiddleware")
+			l.WithFields(logger.Fields{
+				"package": "v2",
+				"method":  "TokenMiddleware",
+			}).Info("Start TokenMiddleware")
 
 			token := r.Header.Get("Authorization")
 			if token == "" {
 				cookie, err := r.Cookie("accessToken")
 				if err != nil || cookie.Value == "" {
 					if err := responder.JsonRespond(w, http.StatusForbidden, map[string]string{"error": http.StatusText(http.StatusForbidden)}); err != nil {
-						l.Error("Error respond: ", err.Error())
+						l.WithFields(logger.Fields{
+							"package": "v2",
+							"method":  "TokenMiddleware",
+							"error":   err.Error(),
+						}).Error("Error respond")
 					}
 					return
 				}
@@ -32,7 +39,11 @@ func TokenMiddleware(ctx context.Context, l logger.Interface) func(http.Handler)
 			claim, err := jwt.ValidateToken(token)
 			if err != nil {
 				if err := responder.JsonRespond(w, http.StatusInternalServerError, map[string]string{"error": http.StatusText(http.StatusInternalServerError)}); err != nil {
-					l.Error("Error respond: ", err.Error())
+					l.WithFields(logger.Fields{
+						"package": "v2",
+						"method":  "TokenMiddleware",
+						"error":   err.Error(),
+					}).Error("Error respond")
 				}
 				return
 			}
@@ -51,7 +62,10 @@ func LoggingMiddleware(l logger.Interface) func(http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			start := time.Now()
 			next.ServeHTTP(w, r)
-			l.Info(fmt.Sprintf("Request: %s %s - %s - %s", r.Method, r.URL.String(), r.RemoteAddr, time.Since(start).String()))
+			l.WithFields(logger.Fields{
+				"package": "v2",
+				"method":  "LoggingMiddleware",
+			}).Info(fmt.Sprintf("Request: %s %s - %s - %s", r.Method, r.URL.String(), r.RemoteAddr, time.Since(start).String()))
 		})
 	}
 }
