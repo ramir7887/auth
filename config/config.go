@@ -9,10 +9,11 @@ import (
 type (
 	// Config -.
 	Config struct {
-		App   `yaml:"app"`
-		HTTP  `yaml:"http"`
-		Log   `yaml:"logger"`
-		Users []User `yaml:"users"`
+		App     `yaml:"app"`
+		HTTP    `yaml:"http"`
+		Log     `yaml:"logger"`
+		Users   []User `yaml:"users"`
+		Profile `yaml:"profile"`
 	}
 
 	// App -.
@@ -35,6 +36,13 @@ type (
 	User struct {
 		Name     string `yaml:"name"`
 		Password string `yaml:"password"`
+	}
+
+	// Profile -.
+	Profile struct {
+		Login    string `yaml:"login"`
+		Password string `yaml:"password"`
+		Enabled  bool   `yaml:"enabled"`
 	}
 )
 
