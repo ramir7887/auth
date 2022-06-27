@@ -43,8 +43,10 @@ type responseError struct {
 func newAuthenticationRoutes(r *mux.Router, l logger.Interface, uc usecase.Authentication) {
 	ctx := context.Background()
 	ar := &authenticationRoutes{
-		uc:     uc,
-		logger: l,
+		uc: uc,
+		logger: l.WithFields(logger.Fields{
+			"package": "v2",
+		}),
 	}
 
 	r.HandleFunc("/login", ar.login(ctx)).Queries("redirect_uri", "{redirect_uri}").Methods(http.MethodPost).Name("login with redirect v2")
@@ -60,24 +62,19 @@ func newAuthenticationRoutes(r *mux.Router, l logger.Interface, uc usecase.Authe
 
 func (a *authenticationRoutes) login(ctx context.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		a.logger.WithFields(logger.Fields{
-			"package": "v2",
-			"method":  "authenticationRoutes.login",
-		}).Info("Start login handler v2")
-		defer a.logger.WithFields(logger.Fields{
-			"package": "v2",
-			"method":  "authenticationRoutes.login",
-		}).Info("End login handler v2")
+		l := a.logger.WithFields(logger.Fields{
+			"method": "authenticationRoutes.login",
+		})
+		l.Info("Start login handler v2")
+		defer l.Info("End login handler v2")
 
 		var req requestLogin
 
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 			err = responder.JsonRespond(w, http.StatusInternalServerError, responseError{Error: http.StatusText(http.StatusInternalServerError)})
 			if err != nil {
-				a.logger.WithFields(logger.Fields{
-					"package": "v2",
-					"method":  "authenticationRoutes.login",
-					"error":   err.Error(),
+				l.WithFields(logger.Fields{
+					"error": err.Error(),
 				}).Error("Error respond")
 			}
 			return
@@ -87,10 +84,8 @@ func (a *authenticationRoutes) login(ctx context.Context) http.HandlerFunc {
 		if err != nil {
 			err = responder.JsonRespond(w, http.StatusForbidden, responseError{Error: http.StatusText(http.StatusForbidden)})
 			if err != nil {
-				a.logger.WithFields(logger.Fields{
-					"package": "v2",
-					"method":  "authenticationRoutes.login",
-					"error":   err.Error(),
+				l.WithFields(logger.Fields{
+					"error": err.Error(),
 				}).Error("Error respond")
 			}
 			return
@@ -118,10 +113,8 @@ func (a *authenticationRoutes) login(ctx context.Context) http.HandlerFunc {
 		http.SetCookie(w, &cookieRefresh)
 		err = responder.JsonRespond(w, http.StatusOK, res)
 		if err != nil {
-			a.logger.WithFields(logger.Fields{
-				"package": "v2",
-				"method":  "authenticationRoutes.login",
-				"error":   err.Error(),
+			l.WithFields(logger.Fields{
+				"error": err.Error(),
 			}).Error("Error respond")
 		}
 
@@ -137,14 +130,11 @@ func (a *authenticationRoutes) login(ctx context.Context) http.HandlerFunc {
 
 func (a *authenticationRoutes) logout(ctx context.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		a.logger.WithFields(logger.Fields{
-			"package": "v2",
-			"method":  "authenticationRoutes.logout",
-		}).Info("Start logout handler v2")
-		defer a.logger.WithFields(logger.Fields{
-			"package": "v2",
-			"method":  "authenticationRoutes.logout",
-		}).Info("End logout handler v2")
+		l := a.logger.WithFields(logger.Fields{
+			"method": "authenticationRoutes.logout",
+		})
+		l.Info("Start logout handler v2")
+		defer l.Info("End logout handler v2")
 
 		cookieAccess := http.Cookie{
 			Name:     "accessToken",
@@ -175,22 +165,17 @@ func (a *authenticationRoutes) logout(ctx context.Context) http.HandlerFunc {
 
 func (a *authenticationRoutes) info(ctx context.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		a.logger.WithFields(logger.Fields{
-			"package": "v2",
-			"method":  "authenticationRoutes.logout",
-		}).Info("Start info handler v2")
-		defer a.logger.WithFields(logger.Fields{
-			"package": "v2",
-			"method":  "authenticationRoutes.logout",
-		}).Info("End info handler v2")
+		l := a.logger.WithFields(logger.Fields{
+			"method": "authenticationRoutes.logout",
+		})
+		l.Info("Start info handler v2")
+		defer l.Info("End info handler v2")
 		user, ok := r.Context().Value(keyUserData).(*userData)
 		if !ok {
 			err := responder.JsonRespond(w, http.StatusInternalServerError, responseError{Error: http.StatusText(http.StatusInternalServerError)})
 			if err != nil {
-				a.logger.WithFields(logger.Fields{
-					"package": "v2",
-					"method":  "authenticationRoutes.logout",
-					"error":   err.Error(),
+				l.WithFields(logger.Fields{
+					"error": err.Error(),
 				}).Error("Error respond")
 			}
 			return
@@ -200,10 +185,8 @@ func (a *authenticationRoutes) info(ctx context.Context) http.HandlerFunc {
 		if err != nil {
 			err = responder.JsonRespond(w, http.StatusNotFound, responseError{Error: http.StatusText(http.StatusNotFound)})
 			if err != nil {
-				a.logger.WithFields(logger.Fields{
-					"package": "v2",
-					"method":  "authenticationRoutes.logout",
-					"error":   err.Error(),
+				l.WithFields(logger.Fields{
+					"error": err.Error(),
 				}).Error("Error respond")
 			}
 			return
@@ -213,10 +196,8 @@ func (a *authenticationRoutes) info(ctx context.Context) http.HandlerFunc {
 		if err := json.NewEncoder(w).Encode(u); err != nil {
 			err = responder.JsonRespond(w, http.StatusInternalServerError, responseError{Error: http.StatusText(http.StatusInternalServerError)})
 			if err != nil {
-				a.logger.WithFields(logger.Fields{
-					"package": "v2",
-					"method":  "authenticationRoutes.logout",
-					"error":   err.Error(),
+				l.WithFields(logger.Fields{
+					"error": err.Error(),
 				}).Error("Error respond")
 			}
 			return
