@@ -17,6 +17,26 @@ type Claim struct {
 	Username string `json:"username"`
 }
 
+func GenerateAllJwt(username string) (string, string, error) {
+	accessToken, err := GenerateAccessJwt(username)
+	if err != nil {
+		return "", "", err
+	}
+	refreshToken, err := GenerateRefreshJwt(username)
+	if err != nil {
+		return "", "", err
+	}
+	return accessToken, refreshToken, nil
+}
+
+func GenerateAccessJwt(username string) (string, error) {
+	return GenerateJwt(username, 1*time.Minute)
+}
+
+func GenerateRefreshJwt(username string) (string, error) {
+	return GenerateJwt(username, 1*time.Hour)
+}
+
 func GenerateJwt(username string, duration time.Duration) (string, error) {
 	expirationTime := time.Now().Add(duration)
 	claims := &Claim{
@@ -32,8 +52,7 @@ func GenerateJwt(username string, duration time.Duration) (string, error) {
 	}
 	return tokenString, nil
 }
-
-func ValidateToken(signedToken string) (*Claim, error) {
+func Parse(signedToken string) (*Claim, error) {
 	token, err := jwt.ParseWithClaims(
 		signedToken,
 		&Claim{},
@@ -48,8 +67,20 @@ func ValidateToken(signedToken string) (*Claim, error) {
 	if !ok {
 		return nil, ParseError
 	}
-	if claims.ExpiresAt < time.Now().Local().Unix() {
+	return claims, nil
+}
+
+func ValidateToken(signedToken string) (*Claim, error) {
+	claims, err := Parse(signedToken)
+	if err != nil {
+		return nil, err
+	}
+	if Expired(claims) {
 		return nil, TokenExpiredError
 	}
 	return claims, nil
+}
+
+func Expired(claim *Claim) bool {
+	return claim.ExpiresAt < time.Now().Local().Unix()
 }
