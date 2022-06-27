@@ -11,6 +11,7 @@ type (
 	Config struct {
 		App     `yaml:"app"`
 		HTTP    `yaml:"http"`
+		GRPC    `yaml:"grpc"`
 		Log     `yaml:"logger"`
 		Users   []User `yaml:"users"`
 		Profile `yaml:"profile"`
@@ -25,6 +26,11 @@ type (
 	// HTTP -.
 	HTTP struct {
 		Port string `env-required:"true" yaml:"port" env:"HTTP_PORT"`
+	}
+
+	// GRPC -.
+	GRPC struct {
+		Port string `env-required:"true" yaml:"port" env:"GRPC_PORT"`
 	}
 
 	// Log -.

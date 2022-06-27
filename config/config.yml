@@ -5,6 +5,9 @@ app:
 http:
   port: '3000'
 
+grpc:
+  port: '4000'
+
 logger:
   log_level: 'debug'
   rollbar_env: 'auth'
