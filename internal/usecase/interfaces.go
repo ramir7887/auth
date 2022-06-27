@@ -13,6 +13,7 @@ type (
 		Login(context.Context, string, string) (string, string, error)
 		Logout(context.Context, string) error
 		Info(context.Context, string) (entity.User, error)
+		Validate(context.Context, string, string) (string, string, error)
 	}
 
 	// UserRepository -.

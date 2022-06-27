@@ -59,3 +59,29 @@ func (uc *AuthenticationUseCase) Info(ctx context.Context, name string) (entity.
 	}
 	return u, nil
 }
+
+func (uc *AuthenticationUseCase) Validate(ctx context.Context, accessToken, refreshToken string) (string, string, error) {
+	var newAccessToken, newRefreshToken string
+
+	claimAccess, err := jwt.Parse(accessToken)
+	if err != nil {
+		return "", "", err
+	}
+
+	if !jwt.Expired(claimAccess) {
+		return accessToken, refreshToken, nil
+	}
+
+	claimRefresh, err := jwt.Parse(refreshToken)
+	if err != nil {
+		return "", "", err
+	}
+
+	if !jwt.Expired(claimRefresh) {
+		newAccessToken, newRefreshToken, err = jwt.GenerateAllJwt(claimAccess.Username)
+		if err != nil {
+			return "", "", err
+		}
+	}
+	return newAccessToken, newRefreshToken, nil
+}
