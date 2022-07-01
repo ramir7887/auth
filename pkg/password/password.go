@@ -5,17 +5,17 @@ import (
 	"log"
 )
 
-func HashPassword(password string) string {
+func HashPassword(password []byte) []byte {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 	if err != nil {
 		log.Printf("HashPassword error: %s", err.Error())
-		return ""
+		return nil
 	}
-	return string(bytes)
+	return bytes
 }
 
-func ComparePassword(password, hashedPassword string) bool {
-	if err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password)); err != nil {
+func ComparePassword(password, hashedPassword []byte) bool {
+	if err := bcrypt.CompareHashAndPassword(hashedPassword, password); err != nil {
 		return false
 	}
 	return true

@@ -24,3 +24,11 @@ func (r *UserRepository) UserByName(name string) (entity.User, error) {
 
 	return entity.User{}, errors.New("user not found")
 }
+
+func (r *UserRepository) Create(user entity.User) error {
+	if _, err := r.UserByName(user.Name); err == nil {
+		return errors.New("name already use")
+	}
+	r.users = append(r.users, user)
+	return nil
+}

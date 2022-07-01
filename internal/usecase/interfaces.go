@@ -16,6 +16,11 @@ type (
 		Validate(context.Context, string, string) (string, string, error)
 	}
 
+	// UserCreate -.
+	UserCreate interface {
+		Create(context.Context, entity.User) error
+	}
+
 	// UserRepository -.
 	UserRepository interface {
 		UserByName(string) (entity.User, error)

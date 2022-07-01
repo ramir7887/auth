@@ -18,7 +18,7 @@ type AuthenticationUseCase struct {
 	repo repository.UserRepository
 }
 
-func New(r repository.UserRepository) *AuthenticationUseCase {
+func NewAuthenticationUseCase(r repository.UserRepository) *AuthenticationUseCase {
 	return &AuthenticationUseCase{
 		repo: r,
 	}
@@ -29,16 +29,16 @@ func (uc *AuthenticationUseCase) Login(ctx context.Context, name, pass string) (
 	if err != nil {
 		return "", "", InvalidNameOrPassword
 	}
-	if !password.ComparePassword(pass, u.Password) {
+	if !password.ComparePassword([]byte(pass), u.Password) {
 		return "", "", InvalidNameOrPassword
 	}
 
 	//JWT create Access and Refresh
-	accessToken, err := jwt.GenerateJwt(u.Name, 1*time.Minute)
+	accessToken, err := jwt.GenerateJwt(u.ID, u.Name, 1*time.Minute)
 	if err != nil {
 		return "", "", err
 	}
-	refreshToken, err := jwt.GenerateJwt(u.Name, 1*time.Hour)
+	refreshToken, err := jwt.GenerateJwt(u.ID, u.Name, 1*time.Hour)
 	if err != nil {
 		return "", "", err
 	}
@@ -78,7 +78,7 @@ func (uc *AuthenticationUseCase) Validate(ctx context.Context, accessToken, refr
 	}
 
 	if !jwt.Expired(claimRefresh) {
-		newAccessToken, newRefreshToken, err = jwt.GenerateAllJwt(claimAccess.Username)
+		newAccessToken, newRefreshToken, err = jwt.GenerateAllJwt(claimAccess.ID, claimAccess.Username)
 		if err != nil {
 			return "", "", err
 		}

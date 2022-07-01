@@ -6,9 +6,9 @@ import (
 	"gitlab.com/g6834/team28/auth/internal/controller/grpc/server"
 	"gitlab.com/g6834/team28/auth/internal/controller/http/profile"
 	v2 "gitlab.com/g6834/team28/auth/internal/controller/http/v2"
-	"gitlab.com/g6834/team28/auth/internal/entity"
-	"gitlab.com/g6834/team28/auth/internal/repository/inmemory"
+	"gitlab.com/g6834/team28/auth/internal/repository/mongorepository"
 	"gitlab.com/g6834/team28/auth/pkg/logger"
+	"gitlab.com/g6834/team28/auth/pkg/mongodb"
 	"os"
 	"os/signal"
 	"syscall"
@@ -24,29 +24,30 @@ func Run(cfg *config.Config) {
 	var err error
 	l := logger.New(cfg.Log.Level)
 
+	// MongoDB
+	db := mongodb.New(cfg.Mongo.Dsn, cfg.Mongo.DbName, l)
+	// Migration run
+	if cfg.Mongo.MigrationRun {
+		err = db.Migrate(cfg.Mongo.MigrationPath, cfg.Mongo.Dsn, cfg.Mongo.MigrationMode)
+		if err != nil {
+			l.Fatalf("Migrate error: %s", err.Error())
+		}
+	}
 	// Repository
 	// 1. Create repository
-	users := make([]entity.User, 0, len(cfg.Users))
-	for _, u := range cfg.Users {
-		user := entity.User{
-			Name:     u.Name,
-			Password: u.Password,
-		}
-		users = append(users, user)
-	}
-	repository := inmemory.New(users)
+	repository := mongorepository.New(db)
 
 	// Use case
 	// 1. Create UseCase
-	authenticationUseCase := usecase.New(repository)
+	authenticationUseCase := usecase.NewAuthenticationUseCase(repository)
+	userCreateUsecase := usecase.NewUserCreateUseCase(repository)
 
-	handler := mux.NewRouter()
 	// HTTP Server
+	handler := mux.NewRouter()
 	prof := profile.New(cfg.Profile.Enabled, cfg.Profile.Login, cfg.Profile.Password, l)
 	prof.NewRouter(handler.PathPrefix("/debug/pprof/").Subrouter())
-
 	// 1. Create Router for Postman tests
-	v2.NewRouter(handler, l, authenticationUseCase)
+	v2.NewRouter(handler, l, authenticationUseCase, userCreateUsecase)
 
 	httpServer := httpserver.New(handler, httpserver.Port(cfg.HTTP.Port))
 	l.WithFields(logger.Fields{

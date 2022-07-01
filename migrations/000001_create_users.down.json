@@ -1,0 +1,15 @@
+[
+  {
+    "dropIndexes": "users",
+    "index": "unique_name"
+  },
+  {
+    "delete": "users",
+    "deletes": [
+      {"q": {"name": "test123"}, "limit": 0},
+      {"q": {"name": "test2"}, "limit": 0},
+      {"q": {"name": "test4"}, "limit": 0},
+      {"q":{"name": "test5"}, "limit": 0}
+    ]
+  }
+]

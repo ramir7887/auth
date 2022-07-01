@@ -14,35 +14,37 @@ var (
 
 type Claim struct {
 	jwt.StandardClaims
+	ID       string `json:"id"`
 	Username string `json:"username"`
 }
 
-func GenerateAllJwt(username string) (string, string, error) {
-	accessToken, err := GenerateAccessJwt(username)
+func GenerateAllJwt(id, username string) (string, string, error) {
+	accessToken, err := GenerateAccessJwt(id, username)
 	if err != nil {
 		return "", "", err
 	}
-	refreshToken, err := GenerateRefreshJwt(username)
+	refreshToken, err := GenerateRefreshJwt(id, username)
 	if err != nil {
 		return "", "", err
 	}
 	return accessToken, refreshToken, nil
 }
 
-func GenerateAccessJwt(username string) (string, error) {
-	return GenerateJwt(username, 1*time.Minute)
+func GenerateAccessJwt(id, username string) (string, error) {
+	return GenerateJwt(id, username, 1*time.Minute)
 }
 
-func GenerateRefreshJwt(username string) (string, error) {
-	return GenerateJwt(username, 1*time.Hour)
+func GenerateRefreshJwt(id, username string) (string, error) {
+	return GenerateJwt(id, username, 1*time.Hour)
 }
 
-func GenerateJwt(username string, duration time.Duration) (string, error) {
+func GenerateJwt(id, username string, duration time.Duration) (string, error) {
 	expirationTime := time.Now().Add(duration)
 	claims := &Claim{
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expirationTime.Unix(),
 		},
+		ID:       id,
 		Username: username,
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

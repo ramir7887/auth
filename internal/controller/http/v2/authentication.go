@@ -20,26 +20,6 @@ type authenticationRoutes struct {
 	logger logger.Interface
 }
 
-type userData struct {
-	name  string
-	token string
-}
-
-type requestLogin struct {
-	Login    string `json:"login"`
-	Password string `json:"password"`
-}
-
-type responseLogin struct {
-	Name         string `json:"username"`
-	AccessToken  string `json:"accessToken"`
-	RefreshToken string `json:"refreshToken"`
-}
-
-type responseError struct {
-	Error string `json:"error"`
-}
-
 func newAuthenticationRoutes(r *mux.Router, l logger.Interface, uc usecase.Authentication) {
 	ctx := context.Background()
 	ar := &authenticationRoutes{
