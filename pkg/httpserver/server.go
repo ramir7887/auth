@@ -11,7 +11,7 @@ const (
 	_defaultReadTimeout     = 60 * time.Second
 	_defaultWriteTimeout    = 60 * time.Second
 	_defaultAddr            = ":3000"
-	_defaultShutdownTimeout = 60 * time.Second
+	_defaultShutdownTimeout = 10 * time.Second
 )
 
 // Server -.

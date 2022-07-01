@@ -14,15 +14,37 @@ var (
 
 type Claim struct {
 	jwt.StandardClaims
+	ID       string `json:"id"`
 	Username string `json:"username"`
 }
 
-func GenerateJwt(username string, duration time.Duration) (string, error) {
+func GenerateAllJwt(id, username string) (string, string, error) {
+	accessToken, err := GenerateAccessJwt(id, username)
+	if err != nil {
+		return "", "", err
+	}
+	refreshToken, err := GenerateRefreshJwt(id, username)
+	if err != nil {
+		return "", "", err
+	}
+	return accessToken, refreshToken, nil
+}
+
+func GenerateAccessJwt(id, username string) (string, error) {
+	return GenerateJwt(id, username, 1*time.Minute)
+}
+
+func GenerateRefreshJwt(id, username string) (string, error) {
+	return GenerateJwt(id, username, 1*time.Hour)
+}
+
+func GenerateJwt(id, username string, duration time.Duration) (string, error) {
 	expirationTime := time.Now().Add(duration)
 	claims := &Claim{
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expirationTime.Unix(),
 		},
+		ID:       id,
 		Username: username,
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -32,8 +54,7 @@ func GenerateJwt(username string, duration time.Duration) (string, error) {
 	}
 	return tokenString, nil
 }
-
-func ValidateToken(signedToken string) (*Claim, error) {
+func Parse(signedToken string) (*Claim, error) {
 	token, err := jwt.ParseWithClaims(
 		signedToken,
 		&Claim{},
@@ -48,8 +69,20 @@ func ValidateToken(signedToken string) (*Claim, error) {
 	if !ok {
 		return nil, ParseError
 	}
-	if claims.ExpiresAt < time.Now().Local().Unix() {
+	return claims, nil
+}
+
+func ValidateToken(signedToken string) (*Claim, error) {
+	claims, err := Parse(signedToken)
+	if err != nil {
+		return nil, err
+	}
+	if Expired(claims) {
 		return nil, TokenExpiredError
 	}
 	return claims, nil
+}
+
+func Expired(claim *Claim) bool {
+	return claim.ExpiresAt < time.Now().Local().Unix()
 }

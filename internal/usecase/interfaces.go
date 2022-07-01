@@ -13,6 +13,12 @@ type (
 		Login(context.Context, string, string) (string, string, error)
 		Logout(context.Context, string) error
 		Info(context.Context, string) (entity.User, error)
+		Validate(context.Context, string, string) (string, string, error)
+	}
+
+	// UserCreate -.
+	UserCreate interface {
+		Create(context.Context, entity.User) error
 	}
 
 	// UserRepository -.

@@ -1,0 +1,36 @@
+[
+  {
+    "createIndexes": "users",
+    "indexes": [
+      {
+        "key": {
+          "name": 1
+        },
+        "name": "unique_name",
+        "unique": true,
+        "background": true
+      }
+    ]
+  },
+  {
+    "insert": "users",
+    "documents":[
+      {
+        "name": "test123",
+        "password": "$2a$14$ke.euFhogr5WCqXSagVuceiZc2o6w/Z6hoL9KIVqIPZdEZL4TRF9K"
+      },
+      {
+        "name": "test2",
+        "password": "$2a$14$ke.euFhogr5WCqXSagVuceiZc2o6w/Z6hoL9KIVqIPZdEZL4TRF9K"
+      },
+      {
+        "name": "test3",
+        "password": "$2a$14$ke.euFhogr5WCqXSagVuceiZc2o6w/Z6hoL9KIVqIPZdEZL4TRF9K"
+      },
+      {
+        "name": "test4",
+        "password": "$2a$14$ke.euFhogr5WCqXSagVuceiZc2o6w/Z6hoL9KIVqIPZdEZL4TRF9K"
+      }
+    ]
+  }
+]

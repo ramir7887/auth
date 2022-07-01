@@ -5,16 +5,31 @@ app:
 http:
   port: '3000'
 
+grpc:
+  port: '4000'
+
+mongo:
+  dsn: 'mongodb://team28:mNgd4ITbhVGd@91.185.93.34:27017/team28'
+  db_name: 'team28'
+  migration_run: False
+  migration_path: 'file://./migrations'
+  migration_mode: 'up'
+
+  dsn2: 'mongodb://localhost:27017'
+
 logger:
   log_level: 'debug'
   rollbar_env: 'auth'
 
-
 users:
   - name: 'test123'
     password: '$2a$14$ke.euFhogr5WCqXSagVuceiZc2o6w/Z6hoL9KIVqIPZdEZL4TRF9K'
-  - name: ''
-    password: ''
+  - name: 'test2'
+    password: '$2a$14$ke.euFhogr5WCqXSagVuceiZc2o6w/Z6hoL9KIVqIPZdEZL4TRF9K'
+  - name: 'test3'
+    password: '$2a$14$ke.euFhogr5WCqXSagVuceiZc2o6w/Z6hoL9KIVqIPZdEZL4TRF9K'
+  - name: 'test4'
+    password: '$2a$14$ke.euFhogr5WCqXSagVuceiZc2o6w/Z6hoL9KIVqIPZdEZL4TRF9K'
 
 profile:
   login: 'test123'

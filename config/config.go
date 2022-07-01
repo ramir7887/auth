@@ -11,6 +11,8 @@ type (
 	Config struct {
 		App     `yaml:"app"`
 		HTTP    `yaml:"http"`
+		GRPC    `yaml:"grpc"`
+		Mongo   `yaml:"mongo"`
 		Log     `yaml:"logger"`
 		Users   []User `yaml:"users"`
 		Profile `yaml:"profile"`
@@ -25,6 +27,19 @@ type (
 	// HTTP -.
 	HTTP struct {
 		Port string `env-required:"true" yaml:"port" env:"HTTP_PORT"`
+	}
+
+	// GRPC -.
+	GRPC struct {
+		Port string `env-required:"true" yaml:"port" env:"GRPC_PORT"`
+	}
+
+	Mongo struct {
+		Dsn           string `env-required:"true" yaml:"dsn" env:"MONGO_DSN"`
+		DbName        string `env-required:"true" yaml:"db_name" env:"DB_NAME"`
+		MigrationPath string `env-required:"true" yaml:"migration_path" env:"MIGRATION_PATH"`
+		MigrationRun  bool   `yaml:"migration_run" env:"MIGRATION_RUN" env-default:"false"`
+		MigrationMode string `env-required:"true" yaml:"migration_mode" env:"MIGRATION_MODE"`
 	}
 
 	// Log -.
