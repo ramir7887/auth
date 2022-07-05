@@ -40,6 +40,19 @@ func newAuthenticationRoutes(r *mux.Router, l logger.Interface, uc usecase.Authe
 	sub.Use(TokenMiddleware(ctx, l))
 }
 
+// login godoc
+// @tags auth
+// @Summary authentication user
+// @Description authentication user by email and password
+// @Accept json
+// @Produce json
+// @Param loginData body requestLogin true "Login Data"
+// @Success 200 {object} responseLogin
+// @response default {object} responseLogin
+// @Header 200 {string} SetCookie "set accessToken and refreshToken"
+// @Failure 500 {object} responseError
+// @Failure 403 {object} responseError
+// @Router /login [post]
 func (a *authenticationRoutes) login(ctx context.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		l := a.logger.WithFields(logger.Fields{
@@ -108,6 +121,14 @@ func (a *authenticationRoutes) login(ctx context.Context) http.HandlerFunc {
 	}
 }
 
+// logout godoc
+// @tags auth
+// @Summary logout user
+// @Description logout user
+// @Success 200
+// @response default
+// @Header 200 {string} SetCookie "set empty cookie"
+// @Router /logout [post]
 func (a *authenticationRoutes) logout(ctx context.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		l := a.logger.WithFields(logger.Fields{
@@ -143,6 +164,17 @@ func (a *authenticationRoutes) logout(ctx context.Context) http.HandlerFunc {
 	}
 }
 
+// info godoc
+// @tags auth
+// @Summary info by user
+// @Description info user by token
+// @Produce json
+// @Security ApiKeyAuth
+// @Success 200 {object} entity.User
+// @Failure 403 {object} responseError
+// @Failure 404 {object} responseError
+// @Failure 500 {object} responseError
+// @Router /validate [post]
 func (a *authenticationRoutes) info(ctx context.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		l := a.logger.WithFields(logger.Fields{

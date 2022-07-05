@@ -26,7 +26,9 @@ type (
 
 	// HTTP -.
 	HTTP struct {
-		Port string `env-required:"true" yaml:"port" env:"HTTP_PORT"`
+		Port         string `env-required:"true" yaml:"port" env:"HTTP_PORT"`
+		ServeAddress string `yaml:"serve_address"`
+		BasePath     string `yaml:"base_path"`
 	}
 
 	// GRPC -.

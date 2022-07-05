@@ -47,7 +47,7 @@ func Run(cfg *config.Config) {
 	prof := profile.New(cfg.Profile.Enabled, cfg.Profile.Login, cfg.Profile.Password, l)
 	prof.NewRouter(handler.PathPrefix("/debug/pprof/").Subrouter())
 	// 1. Create Router for Postman tests
-	v2.NewRouter(handler, l, authenticationUseCase, userCreateUsecase)
+	v2.NewRouter(handler, cfg.HTTP, l, authenticationUseCase, userCreateUsecase)
 
 	httpServer := httpserver.New(handler, httpserver.Port(cfg.HTTP.Port))
 	l.WithFields(logger.Fields{

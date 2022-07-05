@@ -1,0 +1,153 @@
+basePath: /
+definitions:
+  entity.User:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  v2.requestLogin:
+    properties:
+      login:
+        type: string
+      password:
+        type: string
+    type: object
+  v2.responseError:
+    properties:
+      error:
+        type: string
+    type: object
+  v2.responseLogin:
+    properties:
+      accessToken:
+        type: string
+      refreshToken:
+        type: string
+      username:
+        type: string
+    type: object
+  v2.responseMsg:
+    properties:
+      message:
+        type: string
+    type: object
+host: localhost:3000
+info:
+  contact:
+    email: ramir7887@yandex.ru
+    name: API Support
+  description: This is a sample auth server.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Auth API
+  version: "2.0"
+paths:
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: authentication user by email and password
+      parameters:
+      - description: Login Data
+        in: body
+        name: loginData
+        required: true
+        schema:
+          $ref: '#/definitions/v2.requestLogin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          headers:
+            SetCookie:
+              description: set accessToken and refreshToken
+              type: string
+          schema:
+            $ref: '#/definitions/v2.responseLogin'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/v2.responseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v2.responseError'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v2.responseLogin'
+      summary: authentication user
+      tags:
+      - auth
+  /logout:
+    post:
+      description: logout user
+      responses:
+        "200":
+          description: ""
+          headers:
+            SetCookie:
+              description: set empty cookie
+              type: string
+        default:
+          description: ""
+      summary: logout user
+      tags:
+      - auth
+  /user:
+    post:
+      description: create new user
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/v2.responseMsg'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v2.responseError'
+      summary: create user
+      tags:
+      - user
+  /validate:
+    post:
+      description: info user by token
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.User'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/v2.responseError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v2.responseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v2.responseError'
+      security:
+      - ApiKeyAuth: []
+      summary: info by user
+      tags:
+      - auth
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
+x-extension-openapi:
+  example: value on a json format
