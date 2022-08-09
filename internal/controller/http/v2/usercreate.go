@@ -29,6 +29,14 @@ func newUserCreateRoutes(r *mux.Router, l logger.Interface, uc usecase.UserCreat
 	r.HandleFunc("", ur.create(ctx)).Methods(http.MethodPost).Name("user create")
 }
 
+// create godoc
+// @tags user
+// @Summary create user
+// @Description create new user
+// @Produce json
+// @Success 201 {object} responseMsg
+// @Failure 500 {object} responseError
+// @Router /user [post]
 func (ur *userCreateRoutes) create(ctx context.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		l := ur.logger.WithFields(logger.Fields{
@@ -64,7 +72,7 @@ func (ur *userCreateRoutes) create(ctx context.Context) http.HandlerFunc {
 			return
 		}
 
-		err = responder.JsonRespond(w, http.StatusCreated, map[string]string{"message": http.StatusText(http.StatusCreated)})
+		err = responder.JsonRespond(w, http.StatusCreated, responseMsg{Message: http.StatusText(http.StatusCreated)})
 		if err != nil {
 			l.WithFields(logger.Fields{
 				"error": err.Error(),

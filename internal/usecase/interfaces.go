@@ -20,9 +20,4 @@ type (
 	UserCreate interface {
 		Create(context.Context, entity.User) error
 	}
-
-	// UserRepository -.
-	UserRepository interface {
-		UserByName(string) (entity.User, error)
-	}
 )

@@ -4,6 +4,8 @@ app:
 
 http:
   port: '3000'
+  serve_address: 'localhost'
+  base_path: '/'
 
 grpc:
   port: '4000'
